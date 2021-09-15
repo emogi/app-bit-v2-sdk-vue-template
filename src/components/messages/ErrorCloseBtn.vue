@@ -1,0 +1,55 @@
+<template>
+  <button
+    @click="dismissError"
+    class="btn btn-transparent btn-no-padding btn-close"
+    id="close-button"
+    tabindex="3"
+    aria-label="Dismiss Error"
+  >
+    <svg
+      fill="none"
+      height="20"
+      viewBox="0 0 20 20"
+      width="20"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        clip-rule="evenodd"
+        d="m10 8.181 3.638-3.638c.502-.502 1.316-.502 1.819 0 .502.503.502 1.317 0 1.82l-3.638 3.637 3.638 3.638c.502.502.502 1.316 0 1.819-.503.502-1.317.502-1.82 0l-3.637-3.638-3.638 3.638c-.502.502-1.316.502-1.819 0-.502-.503-.502-1.317 0-1.82l3.638-3.637-3.638-3.638c-.502-.502-.502-1.316 0-1.819.503-.502 1.317-.502 1.82 0z"
+        fill="#424648"
+        fill-rule="evenodd"
+      />
+    </svg>
+  </button>
+</template>
+
+<script>
+export default {
+  name: 'ErrorCloseBtn',
+  inject: {
+    $messages: {
+      from: '$messages'
+    }
+  },
+  methods: {
+    dismissError() {
+      this.$messages.dismissErrors()
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+  @import "@/assets/scss/variables.scss";
+  .btn-close {
+    height: 20px;
+    margin-left: auto;
+    width: 20px;
+
+    svg {
+      path {
+        fill: $theme-white;
+      }
+    }
+  }
+</style>

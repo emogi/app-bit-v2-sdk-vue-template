@@ -1,0 +1,27 @@
+@charset "utf-8";
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@300;700;900&display=swap');
+
+$font-family: 'Mulish', sans-serif;
+
+$theme-white: #ffffff;
+$theme-black: #1e1e1e; // rgba(30,30,30)
+$theme-light-grey: #f7f7f8;
+$theme-dark-grey: #424648; // rgb(66,70,72)
+$theme-blue: #7688c3; // rgb(118,136,195)
+$theme-orange: #f4ab6c; // rgb(244, 171, 108)
+$theme-seafoam-blue: #73c9bb;
+
+// primary
+$primary: $theme-blue;
+$primary-light: $theme-blue;
+$primary-dark: $theme-blue;
+$secondary: $theme-light-grey;
+$secondary-light: $theme-light-grey;
+$secondary-dark: $theme-dark-grey;
+
+$text-color: $theme-dark-grey;
+$text-color-light: $theme-dark-grey;
+$text-color-dark: $theme-white;
+
+// sizing
+$border-radius: 6px;

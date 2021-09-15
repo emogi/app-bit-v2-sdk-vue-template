@@ -1,0 +1,152 @@
+version: 2.1
+
+orbs:
+  aws-s3: circleci/aws-s3@2.0.0
+  holler: holler/eks-service-orb@1.5.2
+  slack: circleci/slack@4.4.2
+
+# ---------------------------------------------------------------------------------------------------------------------
+# COMMANDS
+# ---------------------------------------------------------------------------------------------------------------------
+commands:
+  deployment:
+    parameters:
+      environment:
+        type: string
+      aws-role-arn:
+        type: string
+      cloudfront-distro-id:
+        type: string
+      env-file-path:
+        type: string
+      npmrc-file-path:
+        type: string
+      s3-bucket:
+        type: string
+    steps:
+      - checkout
+      - run:
+          name: Copy environment config file
+          command: cp <<parameters.env-file-path>> .env
+      - run:
+          name: Get and set version env var from package.json
+          command: |
+            cat <<parameters.env-file-path>> | grep -v -e '^#' | grep -v -e '^$' | awk '{print "export " $0}' >> $BASH_ENV
+            VERSION=$(node -e 'console.log(require("./package.json").version)')
+            echo "export VUE_APP_HOLLER_APP_BIT_VERSION=$VERSION" >> $BASH_ENV
+            source $BASH_ENV
+      - run:
+          name: Copy .npmrc file
+          command: cp <<parameters.npmrc-file-path>> .npmrc
+      - run:
+          name: Get Github API Token
+          command: |
+            echo "//npm.pkg.github.com/:_authToken=$GITHUB_TOKEN" >> .npmrc
+      - run:
+          name: Install dependencies
+          command: yarn install
+      - run:
+          name: Build static distribution
+          command: yarn build
+      - holler/setup-aws:
+          aws-profile: <<parameters.environment>>
+          role-arn: <<parameters.aws-role-arn>>
+      - aws-s3/sync:
+          from: dist
+          to: 's3://<<parameters.s3-bucket>>/$VUE_APP_HOLLER_APP_BIT_ID/$VUE_APP_HOLLER_APP_BIT_VERSION/'
+          arguments: '--delete --profile <<parameters.environment>>'
+      - run:
+          name: Invalidate all files on CloudFront to bust cache
+          command: |
+            aws cloudfront create-invalidation \
+              --distribution-id <<parameters.cloudfront-distro-id>> \
+              --paths "/$VUE_APP_HOLLER_APP_BIT_ID/$VUE_APP_HOLLER_APP_BIT_VERSION*" \
+              --profile <<parameters.environment>>
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+
+# ---------------------------------------------------------------------------------------------------------------------
+# WORKFLOWS
+# ---------------------------------------------------------------------------------------------------------------------
+workflows:
+  version: 2
+  dev:
+    jobs:
+      - deploy-dev:
+          context:
+            - aws-security-acct
+            - GitHub Private Packages
+          filters:
+            branches:
+              only: dev
+  qa:
+    jobs:
+      - deploy-qa:
+          context:
+            - aws-security-acct
+            - GitHub Private Packages
+          filters:
+            branches:
+              only: main
+  prod:
+    jobs:
+      - hold:
+          type: approval
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+      - deploy-prod:
+          context:
+            - aws-security-acct
+            - GitHub Private Packages
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+          requires:
+            - hold
+
+# ---------------------------------------------------------------------------------------------------------------------
+# JOBS
+# ---------------------------------------------------------------------------------------------------------------------
+jobs:
+  deploy-qa:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - deployment:
+          environment: qa
+          s3-bucket: qa00-holler-app-bits
+          aws-role-arn: arn:aws:iam::406854213764:role/allow-auto-deploy-to-qa00-holler-app-bits
+          cloudfront-distro-id: E38NTBCBJDEDCX
+          env-file-path: ./config/qa.env
+          npmrc-file-path: ./config/qa.npmrc
+
+  deploy-prod:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - deployment:
+          environment: prod
+          s3-bucket: prod00-holler-app-bits
+          aws-role-arn: arn:aws:iam::586480206010:role/allow-auto-deploy-to-prod00-holler-app-bits
+          cloudfront-distro-id: E2TIKAZ6ZB5969
+          env-file-path: ./config/prod.env
+          npmrc-file-path: ./config/prod.npmrc
+
+  # Original app-bit deployment
+  deploy-dev:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - deployment:
+          environment: dev
+          s3-bucket: dseravalli-appbits-test
+          aws-role-arn: arn:aws:iam::968332900958:role/deploy-role-april-appbits-hackathon
+          cloudfront-distro-id: E2AVNL5OQTF2KV
+          env-file-path: ./config/dev.env
+          npmrc-file-path: ./config/dev.npmrc

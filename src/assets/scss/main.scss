@@ -1,0 +1,133 @@
+@charset "utf-8";
+
+@import "./variables.scss";
+
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+html {
+  overflow: hidden;
+}
+
+// DISABLE SELECTION/CONTEXT MENU
+// *:not(input):not(textarea) {
+//   -webkit-user-select: none; /* disable selection/Copy of UIWebView */
+//   user-select: none;
+//   -webkit-touch-callout: none; /* disable the IOS popup when long-press on a link */
+//   touch-action: none;
+// }  
+
+html, body {
+  background-color: $theme-white;
+  color: $text-color-light;
+  font-family: $font-family;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  height: 100%;
+  line-height: 1.3em;
+  margin: 0;
+  min-width: 300px;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  pointer-events: none;
+  user-select: none;
+  &.theme-dark {
+    background-color: $theme-black;
+    color: $text-color-dark;
+  }
+}
+
+.btn {
+  background: transparent;
+  border-radius: $border-radius;
+  border: 0;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 9px 29px;
+  pointer-events: auto;
+  &.btn-no-padding {
+    padding: 0;
+  }
+  &.btn-primary {
+    background-color: $primary-light;
+    color: $text-color-dark;
+  }
+  &.btn-secondary {
+    background-color: $secondary-light;
+    color: $text-color-light;
+  }
+}
+
+.theme-dark {
+  .btn-secondary {
+    background-color: $secondary-dark;
+    color: $text-color-dark;
+  }
+}
+
+.centered-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-wrapper {
+  background-color: $theme-orange;
+  color: $theme-white;
+  font-weight: 900;
+  padding: 12px 16px;
+}
