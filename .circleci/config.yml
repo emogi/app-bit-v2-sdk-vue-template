@@ -138,15 +138,14 @@ jobs:
           env-file-path: ./config/prod.env
           npmrc-file-path: ./config/prod.npmrc
 
-  # Original app-bit deployment
   deploy-dev:
     docker:
       - image: cimg/node:lts
     steps:
       - deployment:
           environment: dev
-          s3-bucket: dseravalli-appbits-test
-          aws-role-arn: arn:aws:iam::968332900958:role/deploy-role-april-appbits-hackathon
-          cloudfront-distro-id: E2AVNL5OQTF2KV
+          s3-bucket: dev00-holler-app-bits
+          aws-role-arn: arn:aws:iam::968332900958:role/allow-auto-deploy-to-dev00-holler-app-bits
+          cloudfront-distro-id: E1A573TAH3G7QO
           env-file-path: ./config/dev.env
           npmrc-file-path: ./config/dev.npmrc
